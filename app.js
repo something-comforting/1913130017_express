@@ -1,22 +1,29 @@
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+const express = require('express')
+const path = require('path')
+const cookieParser = require('cookie-parser')
+const logger = require('morgan')
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-const companyRouter = require('./routes/company');
+const mongoose = require('mongoose')
 
-const app = express();
+const indexRouter = require('./routes/index')
+const usersRouter = require('./routes/users')
+const companyRouter = require('./routes/company')
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+const app = express()
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/company', companyRouter);
+mongoose.connect(
+  `mongodb+srv://something-comforting:${process.env.PASSWORD}@restful101.wwl79fo.mongodb.net/restfulapi?retryWrites=true&w=majority`,
+  { useNewUrlParser: true, useUnifiedTopology: true }
+)
 
-module.exports = app;
+app.use(logger('dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
+app.use(express.static(path.join(__dirname, 'public')))
+
+app.use('/', indexRouter)
+app.use('/users', usersRouter)
+app.use('/company', companyRouter)
+
+module.exports = app

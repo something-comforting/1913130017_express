@@ -1,32 +1,6 @@
-const company = {
-  data: [
-    {
-      id: 1,
-      name: 'Microsoft (Thailand)',
-      address: {
-        province: 'Bangkok',
-        postcode: '10330'
-      }
-    },
-    {
-      id: 2,
-      name: 'LINE MAN Wongnai',
-      address: {
-        province: 'Bangkok',
-        postcode: '10110'
-      }
-    },
-    {
-      id: 3,
-      name: 'Accenture Thailand',
-      address: {
-        province: 'Bangkok',
-        postcode: '10110'
-      }
-    }
-  ]
-}
+const Company = require('../models/company')
 
-exports.index = (req, res) => {
+exports.index = async (req, res) => {
+  const company = await Company.findOne()
   res.send(company)
 }
