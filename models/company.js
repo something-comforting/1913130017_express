@@ -8,7 +8,7 @@ const companySchema = new Schema(
       province: String
     }
   },
-  { collection: 'setting' }
+  { collection: 'companies' }
 )
 
 const company = mongoose.model('companies', companySchema)
