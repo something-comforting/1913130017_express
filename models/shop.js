@@ -12,8 +12,14 @@ const shopSchema = new Schema(
     // createdAt: { type: Date, default: Date.now }
     // updatedAt: { type: Date, default: Date.now },
   },
-  { collection: 'shops', timestamps: true }
+  { toJSON: { virtuals: true }, collection: 'shops', timestamps: true }
 )
+
+shopSchema.virtual('menus', {
+  ref: 'Menus',
+  localField: '_id',
+  foreignField: 'shop'
+})
 
 const shop = mongoose.model('Shops', shopSchema)
 module.exports = shop
