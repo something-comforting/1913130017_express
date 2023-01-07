@@ -14,6 +14,10 @@ const staffSchema = new Schema(
     created: {
       type: Date,
       default: Date.now
+    },
+    photo: {
+      type: String,
+      default: 'nopic.png'
     }
   },
   { collection: 'staffs' }

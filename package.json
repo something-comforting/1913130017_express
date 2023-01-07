@@ -14,7 +14,8 @@
     "express": "~4.16.1",
     "mongoose": "^6.8.0",
     "morgan": "~1.9.1",
-    "prettier": "^2.8.0"
+    "prettier": "^2.8.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

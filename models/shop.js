@@ -7,7 +7,7 @@ const shopSchema = new Schema(
     photo: { type: String, default: 'nopic.png' },
     location: {
       lat: { type: Number },
-      lng: { type: Number }
+      lgn: { type: Number }
     }
     // createdAt: { type: Date, default: Date.now }
     // updatedAt: { type: Date, default: Date.now },
