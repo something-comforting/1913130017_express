@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
+const config = require('./config')
 
 const mongoose = require('mongoose')
 
@@ -13,10 +14,7 @@ const shopRouter = require('./routes/shop')
 
 const app = express()
 
-mongoose.connect(
-  `mongodb+srv://something-comforting:${process.env.PASSWORD}@restful101.wwl79fo.mongodb.net/restfulapi?retryWrites=true&w=majority`,
-  { useNewUrlParser: true, useUnifiedTopology: true }
-)
+mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 app.use(logger('dev'))
 app.use(express.json())

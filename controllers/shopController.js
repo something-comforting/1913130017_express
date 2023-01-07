@@ -1,6 +1,6 @@
 const Shop = require('../models/shop')
 const Menu = require('../models/menu')
-
+const config = require('../config')
 exports.index = async (req , res) => {
   const shop = await Shop.find()
     .select('name photo location')
@@ -9,7 +9,7 @@ exports.index = async (req , res) => {
     return {
       id: shop._id,
       name: shop.name,
-      photo: `http://localhost:3000/images/${shop.photo}`,
+      photo: `${config.DOMAIN}images/${shop.photo}`,
       location: shop.location,
     }
   });
