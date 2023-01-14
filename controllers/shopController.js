@@ -30,35 +30,43 @@ exports.menu = async (req, res) => {
   })
 }
 
-exports.show = async (req, res) => {
+exports.show = async (req, res, next) => {
   try {
     const shop = await Shop.findById(req.params.id).populate('menus')
-    if (!shop) throw new Error('shop not found')
+    if (!shop) {
+      const error = new Error('Shop not found')
+      error.statusCode = 404
+      throw error
+    }
     res.send({ data: shop })
   } catch (err) {
-    res.status(404).json({ message: 'error : ' + err.message })
+    next(err)
   }
 }
 
-exports.insert = async (req, res) => {
+exports.insert = async (req, res, next) => {
   try {
     const { name, photo, location } = req.body
     let shop = new Shop({ name, location, photo: photo && (await saveImageToDisk(photo)) })
     await shop.save()
     res.status(201).json({ message: 'shop added successfully' })
   } catch (err) {
-    res.status(500).json({ message: 'error : ' + err.message })
+    next(err)
   }
 }
 
-exports.destroy = async (req, res) => {
+exports.destroy = async (req, res, next) => {
   try {
     const { id } = req.params
     const shop = await Shop.deleteOne({ _id: id })
-    if (shop.deletedCount === 0) throw new Error('shop not found')
+    if (shop.deletedCount === 0) {
+      const error = new Error('Shop not found')
+      error.statusCode = 404
+      throw error
+    }
     res.status(200).json({ message: 'shop deleted successfully' })
   } catch (err) {
-    res.status(404).json({ message: 'error : ' + err.message })
+    next(err)
   }
 }
 

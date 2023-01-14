@@ -6,6 +6,7 @@ const writeFileAsync = promisify(fs.writeFile)
 
 const Staff = require('../models/staff')
 const config = require('../config')
+
 exports.index = async (req, res) => {
   const staff = await Staff.find().sort({ _id: '1' })
   const staffWithPhotoDomain = staff.map((staff) => {
@@ -19,28 +20,33 @@ exports.index = async (req, res) => {
   res.send({ data: staffWithPhotoDomain })
 }
 
-exports.show = async (req, res) => {
+exports.show = async (req, res, next) => {
   try {
     const staff = await Staff.findById(req.params.id)
-    if (!staff) throw new Error('staff not found')
+    if (!staff) {
+      const error = new Error('Staff not found')
+      error.statusCode = 404
+      throw error
+    }
+
     res.send({ data: staff })
   } catch (err) {
-    res.status(404).json({ message: 'error : ' + err.message })
+    next(err)
   }
 }
 
 exports.insert = async (req, res) => {
   try {
-    const { name, salary, photo } = req.body
-    const staff = new Staff({ name, salary, photo: photo && (await saveImageToDisk(photo)) })
-    await staff.save()
-    res.status(201).json({ message: 'staff added successfully' })
+  const { name, salary, photo } = req.body
+  const staff = new Staff({ name, salary, photo: photo && (await saveImageToDisk(photo)) })
+  await staff.save()
+  res.status(201).json({ message: 'staff added successfully' })
   } catch (err) {
-    res.status(404).json({ message: 'error : ' + err.message })
+    next(err)
   }
 }
 
-exports.update = async (req, res) => {
+exports.update = async (req, res, next) => {
   try {
     const { id } = req.params
     const { name, salary, photo } = req.body
@@ -48,21 +54,29 @@ exports.update = async (req, res) => {
       { _id: id },
       { name, salary, photo: photo && (await saveImageToDisk(photo)) }
     )
-    if (staff.matchedCount === 0) throw new Error('staff not found')
+    if (staff.matchedCount === 0) {
+      const error = new Error('Staff not found')
+      error.statusCode = 404
+      throw error
+    }
     res.status(200).json({ message: 'staff updated successfully' })
   } catch (err) {
-    res.status(404).json({ message: 'error : ' + err.message })
+    next(err)
   }
 }
 
-exports.destroy = async (req, res) => {
+exports.destroy = async (req, res, next) => {
   try {
     const { id } = req.params
     const staff = await Staff.deleteOne({ _id: id })
-    if (staff.deletedCount === 0) throw new Error('staff not found')
+    if (staff.deletedCount === 0) {
+      const error = new Error('Staff not found')
+      error.statusCode = 404
+      throw error
+    }
     res.status(200).json({ message: 'staff deleted successfully' })
   } catch (err) {
-    res.status(404).json({ message: 'error : ' + err.message })
+    next(err)
   }
 }
 

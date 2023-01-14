@@ -7,10 +7,12 @@ const config = require('./config')
 const mongoose = require('mongoose')
 
 const indexRouter = require('./routes/index')
-const usersRouter = require('./routes/users')
+const userRouter = require('./routes/user')
 const companyRouter = require('./routes/company')
 const staffRouter = require('./routes/staff')
 const shopRouter = require('./routes/shop')
+
+const errorHandler = require('./middleware/errorHandler')
 
 const app = express()
 
@@ -25,9 +27,11 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', indexRouter)
-app.use('/users', usersRouter)
+app.use('/user', userRouter)
 app.use('/company', companyRouter)
 app.use('/staff', staffRouter)
 app.use('/shop', shopRouter)
+
+app.use(errorHandler)
 
 module.exports = app
