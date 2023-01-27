@@ -24,5 +24,23 @@ router.post(
   ],
   userController.register
 )
+router.post(
+  '/login',
+  [
+    body('email')
+      .not()
+      .isEmpty()
+      .withMessage('Email cannot be empty')
+      .isEmail()
+      .withMessage('Email is not correctly formatted'),
+    body('password')
+      .not()
+      .isEmpty()
+      .withMessage('Password cannot be empty')
+      .isLength({ min: 5 })
+      .withMessage('Password length must be as least 5 characters')
+  ],
+  userController.login
+)
 
 module.exports = router

@@ -1,4 +1,6 @@
 const { validationResult } = require('express-validator')
+const jwt = require('jsonwebtoken')
+const { JWT_SECRET } = require('../config')
 
 const User = require('../models/User')
 
@@ -35,7 +37,7 @@ exports.register = async (req, res, next) => {
       error.statusCode = 400
       throw error
     }
-    
+
     let user = new User()
     user.name = name
     user.email = email
@@ -48,5 +50,53 @@ exports.register = async (req, res, next) => {
     })
   } catch (err) {
     next(err)
+  }
+}
+
+exports.login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body
+    // Validation
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      const error = new Error('Input is incorrect')
+      error.statusCode = 422
+      error.validation = errors.array()
+      throw error
+    }
+    // Check user
+    const isUserExist = await user.findOne({ email: email })
+    if (!isUserExist) {
+      const error = new Error("Login Error: Can't find this user")
+      error.statusCode = 404
+      throw error
+    }
+    // Check password
+    const isValid = await isUserExist.checkPassword(password)
+    if (!isValid) {
+      const error = new Error('Login Error: Password is incorrect')
+      error.statusCode = 401
+      throw error
+    }
+
+    // Create JWT
+    const token = jwt.sign(
+      {
+        id: isUserExist._id,
+        name: isUserExist.name,
+        role: isUserExist.role
+      },
+      JWT_SECRET,
+      { expiresIn: '5 days' }
+    )
+    const expired_in = jwt.decode(token)
+
+    return res.status(200).json({
+      access_token: token,
+      expired_in: expired_in.exp,
+      token_type: 'Bearer'
+    })
+  } catch (e) {
+    next(e)
   }
 }
