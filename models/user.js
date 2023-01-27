@@ -36,7 +36,7 @@ schema.methods.encryptPassword = async (password) => {
   return hashPassword
 }
 
-schema.methods.checkPassword = async (password) => {
+schema.methods.checkPassword = async function (password) {
   const isValid = await bcrypt.compare(password, this.password)
   return isValid
 }

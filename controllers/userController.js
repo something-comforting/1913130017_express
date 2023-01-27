@@ -23,11 +23,11 @@ exports.register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body
 
-    const err = validationResult(req)
-    if (!err.isEmpty()) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
       const err = new Error('Input is incorrect')
       err.statusCode = 422
-      err.validation = err.array()
+      err.validation = errors.array()
       throw err
     }
 
@@ -59,24 +59,24 @@ exports.login = async (req, res, next) => {
     // Validation
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      const error = new Error('Input is incorrect')
-      error.statusCode = 422
-      error.validation = errors.array()
-      throw error
+      const err = new Error('Input is incorrect')
+      err.statusCode = 422
+      err.validation = errors.array()
+      throw err
     }
     // Check user
-    const isUserExist = await user.findOne({ email: email })
+    const isUserExist = await User.findOne({ email: email })
     if (!isUserExist) {
-      const error = new Error("Login Error: Can't find this user")
-      error.statusCode = 404
-      throw error
+      const err = new Error("Login Error: Can't find this user")
+      err.statusCode = 404
+      throw err
     }
     // Check password
     const isValid = await isUserExist.checkPassword(password)
     if (!isValid) {
-      const error = new Error('Login Error: Password is incorrect')
-      error.statusCode = 401
-      throw error
+      const err = new Error('Login Error: Password is incorrect')
+      err.statusCode = 401
+      throw err
     }
 
     // Create JWT
@@ -84,7 +84,7 @@ exports.login = async (req, res, next) => {
       {
         id: isUserExist._id,
         name: isUserExist.name,
-        role: isUserExist.role
+        role: isUserExist.roles
       },
       JWT_SECRET,
       { expiresIn: '5 days' }

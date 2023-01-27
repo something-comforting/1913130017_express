@@ -36,15 +36,15 @@ exports.show = async (req, res, next) => {
   }
 }
 
-exports.insert = async (req, res) => {
+exports.insert = async (req, res, next) => {
   try {
     const { name, salary, photo } = req.body
     // Validation
-    const err = validationResult(req)
-    if (!err.isEmpty()) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
       const err = new Error('Input is incorrect')
       err.statusCode = 422
-      err.validation = err.array()
+      err.validation = errors.array()
       throw err
     }
     const photoName = photo ? await saveImageToDisk(photo) : undefined
