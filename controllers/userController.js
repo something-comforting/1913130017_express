@@ -1,4 +1,5 @@
-const { model } = require('mongoose')
+const { validationResult } = require('express-validator')
+
 const User = require('../models/User')
 
 const bio = {
@@ -19,6 +20,14 @@ exports.bio = (req, res) => {
 exports.register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body
+
+    const err = validationResult(req)
+    if (!err.isEmpty()) {
+      const err = new Error('Input is incorrect')
+      err.statusCode = 422
+      err.validation = err.array()
+      throw err
+    }
 
     const existEmail = await User.findOne({ email })
     if (existEmail) {

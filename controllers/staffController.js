@@ -3,6 +3,7 @@ const path = require('path')
 const uuidv4 = require('uuid')
 const { promisify } = require('util')
 const writeFileAsync = promisify(fs.writeFile)
+const { validationResult } = require('express-validator')
 
 const Staff = require('../models/staff')
 const config = require('../config')
@@ -37,12 +38,25 @@ exports.show = async (req, res, next) => {
 
 exports.insert = async (req, res) => {
   try {
-  const { name, salary, photo } = req.body
-  const staff = new Staff({ name, salary, photo: photo && (await saveImageToDisk(photo)) })
-  await staff.save()
-  res.status(201).json({ message: 'staff added successfully' })
-  } catch (err) {
-    next(err)
+    const { name, salary, photo } = req.body
+    // Validation
+    const err = validationResult(req)
+    if (!err.isEmpty()) {
+      const err = new Error('Input is incorrect')
+      err.statusCode = 422
+      err.validation = err.array()
+      throw err
+    }
+    const photoName = photo ? await saveImageToDisk(photo) : undefined
+    let staffinsert = Staff({
+      name: name,
+      salary: salary,
+      photo: photoName
+    })
+    const result = await staffinsert.save()
+    return res.status(200).json({ message: `Insert Successful: ${result != null}` })
+  } catch (e) {
+    next(e)
   }
 }
 

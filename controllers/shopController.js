@@ -3,6 +3,7 @@ const path = require('path')
 const uuidv4 = require('uuid')
 const { promisify } = require('util')
 const writeFileAsync = promisify(fs.writeFile)
+const { validationResult } = require('express-validator')
 
 const Shop = require('../models/shop')
 const Menu = require('../models/menu')
@@ -46,12 +47,25 @@ exports.show = async (req, res, next) => {
 
 exports.insert = async (req, res, next) => {
   try {
-    const { name, photo, location } = req.body
-    let shop = new Shop({ name, location, photo: photo && (await saveImageToDisk(photo)) })
-    await shop.save()
-    res.status(201).json({ message: 'shop added successfully' })
-  } catch (err) {
-    next(err)
+    const { name, location, photo } = req.body
+    
+    const err = validationResult(req)
+    if (!err.isEmpty()) {
+      const err = new Error('Input is incorrect')
+      err.statusCode = 422
+      err.validation = err.array()
+      throw err
+    }
+    const photoName = photo ? await saveImageToDisk(photo) : undefined
+    let shopinsert = Shop({
+      name: name,
+      location: location,
+      photo: photoName
+    })
+    const result = await shopinsert.save()
+    return res.status(201).json({ message: `Insert Successful: ${result != null}` })
+  } catch (e) {
+    next(e)
   }
 }
 
