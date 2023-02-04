@@ -22,7 +22,7 @@ const schema = new Schema(
       trim: true,
       minLength: 5
     },
-    roles: {
+    role: {
       type: String,
       default: 'member'
     }

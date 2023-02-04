@@ -11,7 +11,7 @@ const bio = {
   gitusername: 'something-comforting'
 }
 
-exports.index = (req, res, next) => {
+exports.index = (req, res) => {
   res.status(200).json({ fullname: 'Thitiwat Teeramessiriyos' })
 }
 
@@ -42,7 +42,7 @@ exports.register = async (req, res, next) => {
     user.name = name
     user.email = email
     user.password = await user.encryptPassword(password)
-
+    user.role = req.role || 'member'
     await user.save()
 
     res.status(200).json({
@@ -84,7 +84,7 @@ exports.login = async (req, res, next) => {
       {
         id: isUserExist._id,
         name: isUserExist.name,
-        role: isUserExist.roles
+        role: isUserExist.role
       },
       JWT_SECRET,
       { expiresIn: '5 days' }
@@ -99,4 +99,13 @@ exports.login = async (req, res, next) => {
   } catch (e) {
     next(e)
   }
+}
+
+exports.profile = async (req, res) => {
+  const { role, name, email } = req.user
+  res.status(200).json({
+    name,
+    email,
+    role
+  })
 }
