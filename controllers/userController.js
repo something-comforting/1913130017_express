@@ -2,7 +2,7 @@ const { validationResult } = require('express-validator')
 const jwt = require('jsonwebtoken')
 const { JWT_SECRET } = require('../config')
 
-const User = require('../models/User')
+const User = require('../models/user')
 
 const bio = {
   fullname: 'Thitiwat Teeramessiriyos',
